@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Scramjet Browser</title>
+
+<style>
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #202124;
+    color: white;
+}
+
+/* ===== TOP BAR ===== */
+
+#topbar {
+    background: #303134;
+    height: 38px;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 5px;
+}
+
+#tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.tab {
+    background: #3c4043;
+    padding: 6px 14px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+}
+
+.tab.active {
+    background: #202124;
+}
+
+/* buttons */
+
+#newProxyTab,
+#newGameTab {
+    margin-left: 6px;
+    height: 24px;
+    background: #3c4043;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* ===== VIEWS ===== */
+
+#views {
+    position: relative;
+    width: 100vw;
+    height: calc(100vh - 38px);
+}
+
+.view {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="topbar">
+    <div id="tabs"></div>
+    <button id="newProxyTab">New Proxy Tab</button>
+    <button id="newGameTab">New Game Tab</button>
+</div>
+
+<div id="views"></div>
+
+
+<script>
+
+const tabs = document.getElementById("tabs");
+const views = document.getElementById("views");
+const newProxyTab = document.getElementById("newProxyTab");
+const newGameTab = document.getElementById("newGameTab");
+
+let tabId = 0;
+
+function createTab(src, name) {
+
+    const id = "tab" + tabId++;
+
+    // tab
+    const tab = document.createElement("div");
+    tab.className = "tab";
+
+    // title text
+    const title = document.createElement("span");
+    title.textContent = name;
+
+    // close button
+    const close = document.createElement("span");
+    close.textContent = " ×";
+    close.style.marginLeft = "6px";
+    close.style.cursor = "pointer";
+
+    tab.appendChild(title);
+    tab.appendChild(close);
+
+    // iframe
+    const frame = document.createElement("iframe");
+    frame.className = "view";
+    frame.src = src;
+    frame.id = id;
+
+    tabs.appendChild(tab);
+    views.appendChild(frame);
+
+    // switch tab
+    tab.onclick = () => {
+
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+
+        tab.classList.add("active");
+        frame.classList.add("active");
+    };
+
+    // close tab
+    close.onclick = (e) => {
+        e.stopPropagation();
+
+        tab.remove();
+        frame.remove();
+
+        const lastTab = document.querySelector(".tab");
+        const lastView = document.querySelector(".view");
+
+        if (lastTab && lastView) {
+            lastTab.classList.add("active");
+            lastView.classList.add("active");
+        }
+    };
+
+    tab.click();
+}
+
+
+// buttons
+
+newProxyTab.onclick = () => {
+    createTab("index.html", "Proxy");
+};
+
+newGameTab.onclick = () => {
+    createTab("games.html", "Game");
+};
+
+
+// first tab
+createTab("index.html", "Proxy");
+
+</script>
+
+</body>
+</html>
